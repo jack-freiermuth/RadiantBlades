@@ -11,7 +11,7 @@ $png_image = imagecreatefrompng ('guild_logo.png');
 $font_path = 'fonts/CuppaJoe.ttf';
 
 // Set Text to Be Printed On Image
-$text = isset($_POST['name']) && '' != $_POST['name'] ? $_POST['name'] : '';
+$text = isset($_POST['name_text']) && '' != $_POST['name_text'] ? $_POST['name_text'] : '';
 
 $text_color = hex2rgb($_POST['text_color']);
 $text_color = imagecolorallocate($png_image, $text_color['r'], $text_color['g'], $text_color['b']);
@@ -27,23 +27,23 @@ $strlen_to_font_size = array(
 	3 => 140,
 	4 => 120,
 	5 => 120,
-	6 => 120,
-	7 => 110,
-	8 => 120,
-	9 => 120,
-	10 => 120,
-	11 => 120,
-	12 => 120,
-	13 => 120,
-	14 => 120,
-	15 => 120,
-	16 => 120,
+	6 => 100,
+	7 => 95,
+	8 => 81,
+	9 => 873,
+	10 => 69,
+	11 => 67,
+	12 => 60,
+	13 => 59,
+	14 => 50,
+	15 => 41,
+	16 => 30,
 	);
 
 $font_size = $strlen_to_font_size[strlen($text)];
 
 // place some text (top, left)
-imagettfstroketext($png_image, $font_size, 0, 50, 600, $text_color, $stroke_color, $font_path, $text, $stroke_size);
+imagettfstroketext($png_image, $font_size, 0, $_POST['x_axis_size'], 600, $text_color, $stroke_color, $font_path, $text, $stroke_size);
 
 //Save image
 imagepng($png_image, "generated_images/final_image_new.png", 9);

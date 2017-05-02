@@ -46,25 +46,17 @@
 			</tr>
 			<tr>
 				<td>
-				<label for="stroke_size">Stroke Size</label>
-				<p>
-					<input type="text" id="stroke_amount" value="5" style="display: none; border: 0; color: #f6931f; font-weight: bold;" />
-				</p>
+					<label for="stroke_size">Stroke Size</label>
+					<p><input type="text" id="stroke_amount" value="5" style="display: none; border: 0; color: #f6931f; font-weight: bold;" /></p>
 				</td>
-				<td>
-				<div id="stroke_slider-range-min" style="width: 150px"></div>
-				</td>
+				<td><div id="stroke_slider-range-min" style="width: 150px"></div></td>
 			</tr>
 			<tr>
 				<td>
-				<label for="x_axis_size">X-Axis</label>
-				<p>
-					<input type="text" id="x_axis_amount" value="5" style="display: none; border: 0; color: #f6931f; font-weight: bold;" />
-				</p>
+					<label for="x_axis_size">X-Axis</label>
+					<p><input type="text" id="x_axis_amount" value="60" style="display: none; border: 0; color: #f6931f; font-weight: bold;" /></p>
 				</td>
-				<td>
-				<div id="x_axis_slider-range-min" style="width: 150px"></div>
-				</td>
+				<td><div id="x_axis_slider-range-min" style="width: 150px"></div></td>
 			</tr>
 		</table>
 	</form>
@@ -128,21 +120,26 @@
 			    var x_axis_size = xAxis;
 			}
 
+			console.log( "name_text: ", name_text);
+			console.log( "stroke_color: ", stroke_color);
+			console.log( "text_color: ", text_color);
+			console.log( "stroke_size: ", stroke_size);
+			console.log( "x_axis_size: ", x_axis_size);
+
 			$.ajax({
 				type: "POST",
 				url: 'generate_image.php',   
 				data: {
-					'name': name_text,
+					'name_text': name_text,
 					'stroke_color': stroke_color,
 					'text_color': text_color,
 					'stroke_size': stroke_size,
-					'x_axis_amount': x_axis_amount
-						},
+					'x_axis_size': x_axis_size
+					},
 				success: function (result) {
 					console.log( "result: ", result);
 					d = new Date();
 					jQuery('#logo_img').attr("src","generated_images/final_image_new.png?"+d.getTime());
-					// jQuery('#logo').attr("src","generated_images/final_image_new.png?"+d.getTime());
 				},
 		        error: function(jqXHR, textStatus, errorThrown) {
 		        	console.log('jqXHR: ',jqXHR);
@@ -152,8 +149,8 @@
 			});
 	}
 
-
-	  $("#stroke_slider-range-min").slider({
+    // Stroke size slider
+	$("#stroke_slider-range-min").slider({
         range: "min",
         value: 5,
         min: 0,
@@ -162,55 +159,47 @@
         slide: function (event, ui) {
 
             $("#stroke_amount").val(ui.value);
-            $( this ).find('#stroke_amount').html( ui.value );
-            // $(".ui-slider-handle span").html(ui.value);
-
             console.log('Slider: ',  $("#stroke_amount").val());
         	update(false, false, ui.value, false);
 
             if (ui.value == 0) {
                 $("#stroke_slider-range-min").slider('value', 1);
                 $("#stroke_amount").val('1');
-                $( this ).find('#stroke_amount').html( 1 );
-                // $(".ui-slider-handle").val('1');
             }
         },
         stop: function (event, ui) {
             if (ui.value == 0) {
-                $( this ).find('#stroke_amount').html( 1 );
-                // $(".ui-slider-handle span").val('1');
+	            $("#stroke_amount").val('1');
             }
         }
     });
     $("#stroke_amount").val($("#stroke_slider-range-min").slider("value"));
-	
- //    // X axis slider
-	// $("#x_axis_slider-range-min").slider({
- //        range: "min",
- //        value: 60,
- //        min: 30,
- //        step: 10,
- //        max: 160,
- //        slide: function (event, ui) {
 
- //            $("#x_axis_amount").val(ui.value);
- //            $(".ui-slider-handle span").html(ui.value);
+    // X axis slider
+	$("#x_axis_slider-range-min").slider({
+        range: "min",
+        value: 60,
+        min: 20,
+        step: 10,
+        max: 250,
+        slide: function (event, ui) {
 
- //            console.log('Slider: ',  $("#x_axis_amount").val());
- //        	update(false, false, false, ui.value);
+            $("#x_axis_amount").val(ui.value);
 
- //            if (ui.value == 0) {
- //                $("#x_axis_slider-range-min").slider('value', 1);
- //                $("#x_axis_amount").val('1');
- //                $(".ui-slider-handle").val('1');
- //            }
- //        },
- //        stop: function (event, ui) {
- //            if (ui.value == 0) {
- //                $(".ui-slider-handle span").val('1');
- //            }
- //        }
- //    });
- //    $("#x_axis_amount").val($("#x_axis_slider-range-min").slider("value"));
+            console.log('Slider: ',  $("#x_axis_amount").val());
+        	update(false, false, false, ui.value);
+
+            if (ui.value == 0) {
+                $("#x_axis_slider-range-min").slider('value', 1);
+                $("#x_axis_amount").val('1');
+            }
+        },
+        stop: function (event, ui) {
+            if (ui.value == 0) {
+                $("#x_axis_amount").val('1');
+            }
+        }
+    });
+    $("#x_axis_amount").val($("#x_axis_slider-range-min").slider("value"));
 
 </script>

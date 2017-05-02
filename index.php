@@ -1,0 +1,216 @@
+<html>
+<head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+	<link rel="stylesheet" type="text/css" href="stylesheet.css">
+	<link rel="stylesheet" type="text/css" href="animate.css">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800|Lato:100' rel='stylesheet' type='text/css'>
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="js/js.js"></script>
+	<script src="js/jscolor-2.0.4/jscolor.js"></script>
+
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+	<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+	<title>Radiant Blades</title>
+</head>
+
+<div id="exercise_display" class="center-text intitially-hidden">
+	<div id="circuit_name" class="session-text small-shadow"></div>
+	<div id="session_name" class="session-text small-shadow"></div>
+	<div id="timer" class="timer-text small-shadow"></div>
+</div>
+
+<body>
+	<form id="exercise_form">
+		<h1 class="center-text">Radiant Blades</h1>
+		<!-- <p>(Under Construction)</p> -->
+		<!-- This table contains all of the inputs -->
+		<table id="form_table" class="full-width">
+			<tr>
+				<img id="logo_img" src="guild_logo.png" alt="Radiant Blades">
+			</tr>
+			<tr>
+				<td><label for="name_text_input">Names</label></td>
+				<td><input type="text" name="name" placeholder="Name" value="" class="animated animated.infinite" id="name_text_input" min="1"></td>
+			</tr>
+			<tr>
+				<td><label for="text_color">Text Color</label></td>
+				<td><input id="text_color" class="jscolor {onFineChange:'update(this, false, false, false)'}" value="ABABAB"></td>
+			</tr>
+			<tr>
+				<td><label for="stroke_color">Stroke Color</label></td>
+				<td><input id="stroke_color" class="jscolor {onFineChange:'update(false, this, false, false)'}" value="000000"></td>
+			</tr>
+			<tr>
+				<td>
+				<label for="stroke_size">Stroke Size</label>
+				<p>
+					<input type="text" id="stroke_amount" value="5" style="display: none; border: 0; color: #f6931f; font-weight: bold;" />
+				</p>
+				</td>
+				<td>
+				<div id="stroke_slider-range-min" style="width: 150px"></div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				<label for="x_axis_size">X-Axis</label>
+				<p>
+					<input type="text" id="x_axis_amount" value="5" style="display: none; border: 0; color: #f6931f; font-weight: bold;" />
+				</p>
+				</td>
+				<td>
+				<div id="x_axis_slider-range-min" style="width: 150px"></div>
+				</td>
+			</tr>
+		</table>
+	</form>
+	<button  id="default_button"  class="stop-button full-width">Default</button>
+	
+	<br>
+	<br>
+	Tap picture and hold to download.
+</body>
+</html>
+
+<script type="text/javascript">
+
+	jQuery('#name_text_input').on( "keyup", function() {
+		update(false, false, false, false);
+	});
+
+	jQuery('#name_text_input').change( function() {
+		update(false, false, false, false);
+	});
+
+	jQuery('#default_button').click( "keyup", function() {
+		set_values_default();
+	});
+
+	function set_values_default() {
+		$('#text_color').val('ABABAB');
+		$('#text_color').css( 'background-color', '#ABABAB' );
+		$('#text_color').css( 'color', 'black' );
+
+		$('#stroke_color').val('000000');
+		$('#stroke_color').css( 'background-color', 'black' );
+		$('#stroke_color').css( 'color', 'whie' );
+
+		$("#stroke_amount").val('5');
+		$("#x_axis_amount").val('160');
+
+		update(false, false, false, false);
+	}
+
+	function update(textColor, strokeColor, strokeSize, xAxis) {
+		    var name_text = $('#name_text_input').val();
+
+		    var text_color = '#' + $('#text_color').val();
+			if ( false != textColor ) {
+			    var text_color = '#' + textColor;
+			}
+
+		    var stroke_color = '#' + $('#stroke_color').val();
+			if ( false != strokeColor ) {
+			    var stroke_color = '#' + strokeColor;
+			}
+
+		    var stroke_size = $('#stroke_amount').val();
+			if ( false != strokeSize ) {
+			    var stroke_size = strokeSize;
+			}
+
+		    var x_axis_size = $('#x_axis_amount').val();
+			if ( false != xAxis ) {
+			    var x_axis_size = xAxis;
+			}
+
+			$.ajax({
+				type: "POST",
+				url: 'generate_image.php',   
+				data: {
+					'name': name_text,
+					'stroke_color': stroke_color,
+					'text_color': text_color,
+					'stroke_size': stroke_size,
+					'x_axis_amount': x_axis_amount
+						},
+				success: function (result) {
+					console.log( "result: ", result);
+					d = new Date();
+					jQuery('#logo_img').attr("src","generated_images/final_image_new.png?"+d.getTime());
+					// jQuery('#logo').attr("src","generated_images/final_image_new.png?"+d.getTime());
+				},
+		        error: function(jqXHR, textStatus, errorThrown) {
+		        	console.log('jqXHR: ',jqXHR);
+		            console.log('textStatus: ',textStatus);
+		            console.log('errorThrown: ',errorThrown);
+		        }
+			});
+	}
+
+
+	  $("#stroke_slider-range-min").slider({
+        range: "min",
+        value: 5,
+        min: 0,
+        step: 1,
+        max: 10,
+        slide: function (event, ui) {
+
+            $("#stroke_amount").val(ui.value);
+            $( this ).find('#stroke_amount').html( ui.value );
+            // $(".ui-slider-handle span").html(ui.value);
+
+            console.log('Slider: ',  $("#stroke_amount").val());
+        	update(false, false, ui.value, false);
+
+            if (ui.value == 0) {
+                $("#stroke_slider-range-min").slider('value', 1);
+                $("#stroke_amount").val('1');
+                $( this ).find('#stroke_amount').html( 1 );
+                // $(".ui-slider-handle").val('1');
+            }
+        },
+        stop: function (event, ui) {
+            if (ui.value == 0) {
+                $( this ).find('#stroke_amount').html( 1 );
+                // $(".ui-slider-handle span").val('1');
+            }
+        }
+    });
+    $("#stroke_amount").val($("#stroke_slider-range-min").slider("value"));
+	
+ //    // X axis slider
+	// $("#x_axis_slider-range-min").slider({
+ //        range: "min",
+ //        value: 60,
+ //        min: 30,
+ //        step: 10,
+ //        max: 160,
+ //        slide: function (event, ui) {
+
+ //            $("#x_axis_amount").val(ui.value);
+ //            $(".ui-slider-handle span").html(ui.value);
+
+ //            console.log('Slider: ',  $("#x_axis_amount").val());
+ //        	update(false, false, false, ui.value);
+
+ //            if (ui.value == 0) {
+ //                $("#x_axis_slider-range-min").slider('value', 1);
+ //                $("#x_axis_amount").val('1');
+ //                $(".ui-slider-handle").val('1');
+ //            }
+ //        },
+ //        stop: function (event, ui) {
+ //            if (ui.value == 0) {
+ //                $(".ui-slider-handle span").val('1');
+ //            }
+ //        }
+ //    });
+ //    $("#x_axis_amount").val($("#x_axis_slider-range-min").slider("value"));
+
+</script>

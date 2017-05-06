@@ -38,11 +38,11 @@
 			</tr>
 			<tr>
 				<td><label for="text_color">Text Color</label></td>
-				<td><input id="text_color" class="jscolor {onFineChange:'update(this, false, false, false)'}" value="ABABAB"></td>
+				<td><input id="text_color" class="jscolor" value="ABABAB"></td>
 			</tr>
 			<tr>
 				<td><label for="stroke_color">Stroke Color</label></td>
-				<td><input id="stroke_color" class="jscolor {onFineChange:'update(false, this, false, false)'}" value="000000"></td>
+				<td><input id="stroke_color" class="jscolor" value="000000"></td>
 			</tr>
 			<tr>
 				<td>
@@ -58,6 +58,13 @@
 				</td>
 				<td><div id="x_axis_slider-range-min" style="width: 150px"></div></td>
 			</tr>
+			<tr>
+				<td>
+					<label for="font_size">Font Size</label>
+					<p><input type="text" id="font_amount" value="100" style="display: none; border: 0; color: #f6931f; font-weight: bold;" /></p>
+				</td>
+				<td><div id="font_slider-range-min" style="width: 150px"></div></td>
+			</tr>
 		</table>
 	</form>
 	<button  id="default_button"  class="stop-button full-width">Default</button>
@@ -70,17 +77,36 @@
 
 <script type="text/javascript">
 
-	jQuery('#name_text_input').on( "keyup", function() {
-		update(false, false, false, false);
+	var input_delay_generate_time = 500;
+	$('#name_text_input').keyup(function() {
+		delay(function(){
+			update(false, false, false, false, false);
+		}, input_delay_generate_time );
 	});
 
-	jQuery('#name_text_input').change( function() {
-		update(false, false, false, false);
+	$('#text_color').change(function() {
+		delay(function(){
+			update($('#text_color').val(), false, false, false, false);
+		}, input_delay_generate_time );
+	});
+
+	$('#stroke_color').change(function() {
+		delay(function(){
+			update(false, $('#stroke_color').val(), false, false, false);
+		}, input_delay_generate_time );
 	});
 
 	jQuery('#default_button').click( "keyup", function() {
 		set_values_default();
 	});
+
+	var delay = (function(){
+		var timer = 0;
+		return function(callback, ms){
+			clearTimeout (timer);
+			timer = setTimeout(callback, ms);
+		};
+	})();
 
 	function set_values_default() {
 		$('#text_color').val('ABABAB');
@@ -93,11 +119,12 @@
 
 		$("#stroke_amount").val('5');
 		$("#x_axis_amount").val('160');
+		$("#font_amount").val('100');
 
-		update(false, false, false, false);
+		update(false, false, false, false, false);
 	}
 
-	function update(textColor, strokeColor, strokeSize, xAxis) {
+	function update(textColor, strokeColor, strokeSize, xAxis, fontSize) {
 		    var name_text = $('#name_text_input').val();
 
 		    var text_color = '#' + $('#text_color').val();
@@ -120,11 +147,19 @@
 			    var x_axis_size = xAxis;
 			}
 
+		    var font_amount = $('#font_amount').val();
+			if ( false != fontSize ) {
+			    var font_amount = fontSize;
+			}
+
 			console.log( "name_text: ", name_text);
 			console.log( "stroke_color: ", stroke_color);
 			console.log( "text_color: ", text_color);
 			console.log( "stroke_size: ", stroke_size);
 			console.log( "x_axis_size: ", x_axis_size);
+			console.log( "font_amount: ", font_amount);
+
+
 
 			$.ajax({
 				type: "POST",
@@ -134,7 +169,8 @@
 					'stroke_color': stroke_color,
 					'text_color': text_color,
 					'stroke_size': stroke_size,
-					'x_axis_size': x_axis_size
+					'x_axis_size': x_axis_size,
+					'font_amount': font_amount
 					},
 				success: function (result) {
 					console.log( "result: ", result);
@@ -160,7 +196,9 @@
 
             $("#stroke_amount").val(ui.value);
             console.log('Slider: ',  $("#stroke_amount").val());
-        	update(false, false, ui.value, false);
+            delay(function(){
+	        	update(false, false, ui.value, false, false);
+            }, input_delay_generate_time );
 
             if (ui.value == 0) {
                 $("#stroke_slider-range-min").slider('value', 1);
@@ -179,15 +217,17 @@
 	$("#x_axis_slider-range-min").slider({
         range: "min",
         value: 60,
-        min: 20,
+        min: 0,
         step: 10,
-        max: 250,
+        max: 450,
         slide: function (event, ui) {
 
             $("#x_axis_amount").val(ui.value);
 
             console.log('Slider: ',  $("#x_axis_amount").val());
-        	update(false, false, false, ui.value);
+            delay(function(){
+	        	update(false, false, false, ui.value, false);
+            }, input_delay_generate_time );
 
             if (ui.value == 0) {
                 $("#x_axis_slider-range-min").slider('value', 1);
@@ -201,5 +241,34 @@
         }
     });
     $("#x_axis_amount").val($("#x_axis_slider-range-min").slider("value"));
+
+    // Font size slider
+	$("#font_slider-range-min").slider({
+        range: "min",
+        value: 100,
+        min: 20,
+        step: 10,
+        max: 250,
+        slide: function (event, ui) {
+
+            $("#font_amount").val(ui.value);
+
+            console.log('Slider: ',  $("#font_amount").val());
+            delay(function(){
+	        	update(false, false, false, false, ui.value);
+            }, input_delay_generate_time );
+
+            if (ui.value == 0) {
+                $("#font_slider-range-min").slider('value', 1);
+                $("#font_amount").val('1');
+            }
+        },
+        stop: function (event, ui) {
+            if (ui.value == 0) {
+                $("#font_amount").val('1');
+            }
+        }
+    });
+    $("#font_amount").val($("#font_slider-range-min").slider("value"));
 
 </script>

@@ -21,26 +21,7 @@ $stroke_color = imagecolorallocate($png_image, $stroke_color['r'], $stroke_color
 
 $stroke_size = $_POST['stroke_size'];
 
-$strlen_to_font_size = array(
-	1 => 140,
-	2 => 140,
-	3 => 140,
-	4 => 120,
-	5 => 120,
-	6 => 100,
-	7 => 95,
-	8 => 81,
-	9 => 873,
-	10 => 69,
-	11 => 67,
-	12 => 60,
-	13 => 59,
-	14 => 50,
-	15 => 41,
-	16 => 30,
-	);
-
-$font_size = $strlen_to_font_size[strlen($text)];
+$font_size = $_POST['font_amount'];
 
 // place some text (top, left)
 imagettfstroketext($png_image, $font_size, 0, $_POST['x_axis_size'], 600, $text_color, $stroke_color, $font_path, $text, $stroke_size);
